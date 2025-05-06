@@ -739,6 +739,8 @@ DaggerCategories/Univalence.v
 DaggerCategories/Functors.v
 DaggerCategories/Transformations.v
 
+Monoidal/DaggerMonoidal.v
+
 DaggerCategories/FunctorCategory.v
 
 DaggerCategories/Examples/Groupoids.v
@@ -762,3 +764,4 @@ MarkovCategories/InformationFlowAxioms.v
 MarkovCategories/State.v
 MarkovCategories/ProbabilitySpaces.v
 MarkovCategories/Couplings.v
+
