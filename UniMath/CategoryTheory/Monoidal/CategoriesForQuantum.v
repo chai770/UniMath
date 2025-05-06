@@ -1,3 +1,21 @@
+<<<<<<< HEAD
+=======
+(***************************************************************************
+
+ Monoidal Categories for Quantum Theory
+
+ In this file we introduce formalism from the book Categories for Quantum 
+ Theory: An Introduction, by Chris Heunen and James Vicary (2019). We 
+ define a superposition rule in a category, define linear functors, and 
+ explore interactions of superposition with biproducts, as seen in Heunen 
+ and Vicary from sections 2.2.2 and 2.2.3. 
+
+ Contents
+ 1. Superposition Rules
+ 2. Biproducts
+
+ ***************************************************************************)
+>>>>>>> 7b39794df45ef1cd2a82f5a2d66bd477aebfd362
 
 Require Import UniMath.Foundations.All.
 Require Import UniMath.MoreFoundations.All.
@@ -208,6 +226,15 @@ Definition is_linear_func
 =  (#F(f)) +^{opN} (#F(g)).
 
 
+<<<<<<< HEAD
+=======
+(**
+
+2. Biproducts
+
+*)
+
+>>>>>>> 7b39794df45ef1cd2a82f5a2d66bd477aebfd362
 (* Axiom 3 from Definition 2.18 in Heunen and Vicary *)
 
 Lemma id_biproduct_superpos
@@ -216,6 +243,7 @@ Lemma id_biproduct_superpos
   (Z : Zero C)
   (P : bin_biproduct A B Z)
   (op : superpos_oper C)
+<<<<<<< HEAD
   : identity (bin_biproduct_object P) = (((bin_biproduct_pr1 (pr1 P)) · (bin_biproduct_i1 (pr1 P))) 
   +^{op} ((bin_biproduct_pr2 (pr1 P)) · (bin_biproduct_i2 (pr1 P)))).
 
@@ -341,6 +369,219 @@ Proof.
 Qed.
 
 (* Proving that the structure given in 2.18 of Heunen and Vicary
+=======
+  : identity (bin_biproduct_object P)
+    = (bin_biproduct_pr1 P · bin_biproduct_i1 P) +^{op} (bin_biproduct_pr2 P · bin_biproduct_i2 P).
+Proof. 
+  apply (BinProductArrowsEq _ _ _ P).
+  - change (BinProductPr1 C P) with (bin_biproduct_pr1 P). 
+    rewrite id_left.
+    rewrite superpos_compat_with_comp_2.
+    do 2 rewrite assoc'.
+    rewrite (bin_biproduct_i1_pr1 P).
+    rewrite id_right.
+    rewrite bin_biproduct_i2_pr1.
+    rewrite ZeroArrow_comp_right.
+    rewrite (zero_super_unit_eq _ op).
+    rewrite superpos_unit_zero.
+    reflexivity.
+  - change (BinProductPr2 C P) with (bin_biproduct_pr2 P).
+    rewrite id_left.
+    rewrite superpos_compat_with_comp_2.
+    do 2 rewrite assoc'.
+    rewrite bin_biproduct_i1_pr2.
+    rewrite bin_biproduct_i2_pr2.
+    rewrite ZeroArrow_comp_right.
+    rewrite (zero_super_unit_eq _ op).
+    rewrite superpos_commutes. 
+    rewrite superpos_unit_zero.
+    rewrite (id_right _).
+    reflexivity.
+Qed.
+  
+Section IsBinBiproduct'.
+
+  Context {C : category}.
+  Context {A B : C}.
+  Context {P : bin_biproduct_data A B}.
+  Context {Z : Zero C}.
+  Context {op : superpos_oper C}.
+
+  Context (H1 : bin_biproduct_i1 P · bin_biproduct_pr1 P = identity A).
+  Context (H2 : bin_biproduct_i2 P · bin_biproduct_pr2 P = identity B).
+  Context (Z1 : bin_biproduct_i1 P · bin_biproduct_pr2 P = ZeroArrow Z A B).
+  Context (Z2 : bin_biproduct_i2 P · bin_biproduct_pr1 P = ZeroArrow Z B A).
+  Context (A3 : identity P
+                = (bin_biproduct_pr1 P · bin_biproduct_i1 P)
+                  +^{op} (bin_biproduct_pr2 P · bin_biproduct_i2 P)).
+
+  Section ProductUniversalProperty.
+
+    Context (Q : C).
+    Context (f : C ⟦ Q, A ⟧).
+    Context (g : C ⟦ Q, B ⟧).
+
+    Definition make_is_bin_biproduct'_product_arrow
+      : C⟦Q, P⟧.
+    Proof.
+      exact ((f · (bin_biproduct_i1 P)) +^{op} (g · bin_biproduct_i2 P)).
+    Defined.
+
+    Lemma make_is_bin_biproduct'_product_arrow_commutes1
+      : make_is_bin_biproduct'_product_arrow · bin_biproduct_pr1 P = f.
+    Proof.
+      unfold make_is_bin_biproduct'_product_arrow.
+      rewrite superpos_compat_with_comp_2.
+      do 2 rewrite assoc'.
+      rewrite H1. 
+      rewrite Z2.
+      rewrite id_right.
+      rewrite ZeroArrow_comp_right.
+      rewrite (zero_super_unit_eq _ op).
+      rewrite superpos_unit_zero. 
+      reflexivity.
+    Qed.
+
+    Lemma make_is_bin_biproduct'_product_arrow_commutes2
+      : make_is_bin_biproduct'_product_arrow · bin_biproduct_pr2 P = g.
+    Proof.
+      unfold make_is_bin_biproduct'_product_arrow.
+      rewrite superpos_compat_with_comp_2.
+      do 2 rewrite assoc'.
+      rewrite H2. 
+      rewrite Z1.
+      rewrite id_right.
+      rewrite ZeroArrow_comp_right.
+      rewrite (zero_super_unit_eq _ op).
+      rewrite superpos_commutes.
+      rewrite superpos_unit_zero. 
+      reflexivity.
+    Qed.
+
+    Lemma make_is_bin_biproduct'_product_arrow_unique
+      (h': C⟦Q, P⟧)
+      (H : h' · bin_biproduct_pr1 P = f × h' · bin_biproduct_pr2 P = g)
+      : h' = make_is_bin_biproduct'_product_arrow.
+    Proof.
+      rewrite <- (id_right h').
+      rewrite A3.
+      rewrite superpos_compat_with_comp_1.
+      do 2 rewrite assoc.
+      unfold make_is_bin_biproduct'_product_arrow.
+      rewrite <- (pr1 H).
+      rewrite <- (pr2 H).
+      reflexivity.
+    Qed.
+
+    Definition make_is_bin_biproduct'_product_property
+      : ∃! (h: C⟦Q, P⟧), h · bin_biproduct_pr1 P = f × h · bin_biproduct_pr2 P = g.
+    Proof.
+      use unique_exists.
+      - exact make_is_bin_biproduct'_product_arrow.
+      - split.
+        + exact make_is_bin_biproduct'_product_arrow_commutes1.
+        + exact make_is_bin_biproduct'_product_arrow_commutes2.
+      - abstract (
+          intro y;
+          apply isapropdirprod;
+          apply homset_property
+        ).
+      - exact make_is_bin_biproduct'_product_arrow_unique.
+    Defined.
+
+  End ProductUniversalProperty.
+
+  Section CoproductUniversalProperty.
+
+    Context (Q : C).
+    Context (f : C ⟦ A, Q ⟧).
+    Context (g : C ⟦ B, Q ⟧).
+
+    Definition make_is_bin_biproduct'_coproduct_arrow
+      : C⟦P, Q⟧.
+    Proof.
+      exact ((bin_biproduct_pr1 P · f) +^{op} (bin_biproduct_pr2 P · g)).
+    Defined.
+
+    Lemma make_is_bin_biproduct'_coproduct_arrow_commutes1
+      : bin_biproduct_i1 P · make_is_bin_biproduct'_coproduct_arrow = f.
+    Proof.
+      unfold make_is_bin_biproduct'_coproduct_arrow.
+      rewrite superpos_compat_with_comp_1.
+      do 2 rewrite assoc.
+      rewrite H1. 
+      rewrite Z1.
+      rewrite id_left.
+      rewrite ZeroArrow_comp_left.
+      rewrite (zero_super_unit_eq _ op).
+      rewrite superpos_unit_zero. 
+      reflexivity.
+    Qed.
+
+    Lemma make_is_bin_biproduct'_coproduct_arrow_commutes2
+      : bin_biproduct_i2 P · make_is_bin_biproduct'_coproduct_arrow = g.
+    Proof.
+      unfold make_is_bin_biproduct'_coproduct_arrow.
+      rewrite superpos_compat_with_comp_1.
+      do 2 rewrite assoc.
+      rewrite H2. 
+      rewrite Z2.
+      rewrite id_left.
+      rewrite ZeroArrow_comp_left.
+      rewrite (zero_super_unit_eq _ op).
+      rewrite superpos_commutes.
+      rewrite superpos_unit_zero. 
+      reflexivity.
+    Qed.
+
+    Lemma make_is_bin_biproduct'_coproduct_arrow_unique
+      (h': C⟦P, Q⟧)
+      (H : bin_biproduct_i1 P · h' = f × bin_biproduct_i2 P · h' = g)
+      : h' = make_is_bin_biproduct'_coproduct_arrow.
+    Proof.
+      rewrite <- (id_left h').
+      rewrite A3.
+      rewrite superpos_compat_with_comp_2.
+      do 2 rewrite assoc'.
+      rewrite (pr1 H).
+      rewrite (pr2 H).
+      reflexivity.
+    Qed.
+
+    Definition make_is_bin_biproduct'_coproduct_property
+      : ∃! (h: C⟦P, Q⟧), bin_biproduct_i1 P · h = f × bin_biproduct_i2 P · h = g.
+    Proof.
+      use unique_exists.
+      - exact make_is_bin_biproduct'_coproduct_arrow.
+      - split.
+        + exact make_is_bin_biproduct'_coproduct_arrow_commutes1.
+        + exact make_is_bin_biproduct'_coproduct_arrow_commutes2.
+      - abstract (
+          intro y;
+          apply isapropdirprod;
+          apply homset_property
+        ).
+      - exact make_is_bin_biproduct'_coproduct_arrow_unique.
+    Defined.
+
+  End CoproductUniversalProperty.
+
+  Definition make_is_bin_biproduct'
+    : is_bin_biproduct (Z := Z) P.
+  Proof.
+    use make_is_bin_biproduct.
+    - exact make_is_bin_biproduct'_product_property.
+    - exact make_is_bin_biproduct'_coproduct_property.
+    - exact H1.
+    - exact Z1.
+    - exact Z2.
+    - exact H2.
+  Defined.
+
+End IsBinBiproduct'.
+
+(*Proving that the structure given in 2.18 of Heunen and Vicary
+>>>>>>> 7b39794df45ef1cd2a82f5a2d66bd477aebfd362
 indeed gives a biproduct *)
 
 Lemma axiom3_converse
@@ -354,12 +595,18 @@ Lemma axiom3_converse
   (i2 : B --> P)
   (H1 : i1 · p1 = (identity A))
   (H2 : i2 · p2 = (identity B))
+<<<<<<< HEAD
   (Z1 : i1 · p2 = (ZeroArrow Z A B))
   (Z2 : i2 · p1 = (ZeroArrow Z B A))
+=======
+  (Z1 : i1 · p2 = (u^{op}_{A, B}))
+  (Z2 : i2 · p1 = (u^{op}_{B, A}))
+>>>>>>> 7b39794df45ef1cd2a82f5a2d66bd477aebfd362
   (A3 : (identity P) = (p1 · i1) +^{op} (p2 · i2))
   : bin_biproduct A B Z.
 Proof.
 
+<<<<<<< HEAD
   assert (X0 : isBinProduct C A B P p1 p2).
   {
     unfold isBinProduct.
@@ -493,6 +740,27 @@ Proof.
   set (is_bipr := make_is_bin_biproduct (P ,, (p1 ,, p2 ,, i1 ,, i2)) X0 X1 H1 Z1 Z2 H2).
   exact (make_bin_biproduct (P,, p1,, p2,, i1,, i2) is_bipr).
 
+=======
+  set (bipr_data := (make_bin_biproduct_data P p1 p2 i1 i2)).
+  assert (ZZ1 : i1 · p2 = ZeroArrow Z A B).
+  {
+    rewrite Z1.
+    symmetry. 
+    exact (zero_super_unit_eq Z op A B).
+  }
+  assert (ZZ2 : i2 · p1 = ZeroArrow Z B A).
+  {
+    rewrite Z2. 
+    symmetry. 
+    exact (zero_super_unit_eq Z op B A).
+  }
+  change (i1) with (bin_biproduct_i1 bipr_data) in H1,Z1,A3.
+  change (i2) with (bin_biproduct_i2 bipr_data) in H2,Z2,A3.
+  change (p1) with (bin_biproduct_pr1 bipr_data) in H1,Z2,A3.
+  change (p2) with (bin_biproduct_pr2 bipr_data) in H2,Z1,A3.
+  set (is_bipr := (@make_is_bin_biproduct' C A B bipr_data Z op H1 H2 ZZ1 ZZ2 A3)).
+  exact (make_bin_biproduct bipr_data is_bipr).
+>>>>>>> 7b39794df45ef1cd2a82f5a2d66bd477aebfd362
 Qed.
 
 
@@ -503,4 +771,7 @@ Qed.
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7b39794df45ef1cd2a82f5a2d66bd477aebfd362
